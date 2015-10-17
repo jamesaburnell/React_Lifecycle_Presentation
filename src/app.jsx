@@ -1,20 +1,11 @@
 'use strict';
 
 var React = require('react');
+var ReactDOM = require('react-dom');
+
 // tutorial1.js
 var Box = React.createClass({
-  // getInitialState: function() {
-  //   return {letter: '-'}
-  // },
-  // tick: function() {
-  //   if(this.state.letter === 'X'){
-  //     this.state.letter = 'O'
-  //   }
-  //   else{
-  //     this.state.letter = 'X'
-  //   }
-  //   this.setState ({letter: this.state.letter})
-  // },
+
 
   render: function() {
     return (
@@ -29,9 +20,9 @@ var Row = React.createClass({
   render: function() {
     return (
       <div className="row">
-        <Box key="0"  handleClick={this.props.handleClick} char={this.props.char[0]}/>
-        <Box key='1'  handleClick={this.props.handleClick} char={this.state.char[1]}/>
-        <Box key='2'  handleClick={this.props.handleClick} char={this.state.char[2]}/>
+        <Box key="0"  handleClick={this.props.handleClick} char={this.props.data[0]}/>
+        <Box key='1'  handleClick={this.props.handleClick} char={this.props.data[1]}/>
+        <Box key='2'  handleClick={this.props.handleClick} char={this.props.data[2]}/>
       </div>
 
     )
@@ -40,31 +31,33 @@ var Row = React.createClass({
 
 var Board = React.createClass({
   getInitialState: function() {
-    return {winCheck: {
-       0: ['-','-','-'],
-       1: ['-','-','-'],
-       2: ['-','-','-']
-    }}
+    return {winCheck: [
+       ['-','-','-'],
+       ['-','-','-'],
+       ['-','-','-']
+     ]
+    }
   },
   tick: function (arg,param){
+    // debugger;
     var rowClicked = param.charAt(4)
     var boxClicked = param.charAt(7)
     if(this.state.winCheck[rowClicked][boxClicked] === 'X') this.state.winCheck[rowClicked][boxClicked] = 'O'
     else this.state.winCheck[rowClicked][boxClicked] = 'X'
-    this.setState ({wincheck: this.state.wincheck})
+    this.setState ({winCheck: this.state.winCheck})
   },
 
   render: function() {
     return (
       <div className="board">
-        <Row key='0' handleClick={this.tick} char={this.state.wincheck.0}/>
-        <Row key='1' handleClick={this.tick} char={this.state.wincheck.1}/>
-        <Row key='2' handleClick={this.tick} char={this.state.wincheck.2}/>
+        <Row key='0' handleClick={this.tick} data={this.state.winCheck[0]}/>
+        <Row key='1' handleClick={this.tick} data={this.state.winCheck[1]}/>
+        <Row key='2' handleClick={this.tick} data={this.state.winCheck[2]}/>
       </div>
     )
   }
 })
-React.render(
+ReactDOM.render(
   <Board />,
   document.body
 );

@@ -18,7 +18,9 @@
   "dependencies": {
     "browserify": "^10.2.4",
     "gulp": "^3.9.0",
-    "react": "^0.13.3",
+    "gulp-notify": "^2.2.0",
+    "react": "^0.14",
+    "react-dom": "^0.14.0",
     "reactify": "^1.1.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.2"

@@ -1,33 +1,54 @@
 var gulp = require('gulp');
-var source = require('vinyl-source-stream'); // Used to stream bundle for further handling
 var browserify = require('browserify');
+var reactify = require('reactify');
 var watchify = require('watchify');
-var reactify = require('reactify'); 
- 
-gulp.task('browserify', function() {
-    var bundler = browserify({
-        entries: ['./src/app.jsx'], // Only need initial file, browserify finds the deps
-        transform: [reactify], // We want to convert JSX to normal javascript
-        debug: true, // Gives us sourcemapping
-        cache: {}, packageCache: {}, fullPaths: true // Requirement of watchify
-    });
-    var watcher  = watchify(bundler);
+var source = require('vinyl-source-stream');
+var notify = require('gulp-notify');
 
-    return watcher
-    .on('update', function () { // When any files update
-        var updateStart = Date.now();
-        console.log('Updating!');
-        watcher.bundle() // Create new bundle that uses the cache for high performance
-        .pipe(source('bundle.js'))
-    // This is where you add uglifying etc.
-        .pipe(gulp.dest('./build/'));
-        console.log('Updated!', (Date.now() - updateStart) + 'ms');
-    })
-    .bundle() // Create the initial bundle when starting the task
-    .pipe(source('bundle.js'))
-    .pipe(gulp.dest('./build/'));
+function handleErrors() {
+  var args = Array.prototype.slice.call(arguments);
+  notify.onError({
+    title : 'Compile Error',
+    message : '<%= error.message %>'
+  }).apply(this, args);
+  //console.log('Compile error: ', args);
+  this.emit('end'); //keeps gulp from hanging on this task
+}
+
+function buildScript(file, watch) {
+  var props = {
+    entries : ['./src/' + file],
+    debug : true,
+    transform : [reactify]
+  };
+
+  //watchify if watch set to true. otherwise browserify once
+  var bundler = watch ? watchify(browserify(props)) : browserify(props);
+
+  function rebundle(){
+    var stream = bundler.bundle();
+    return stream
+      .on('error', handleErrors)
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest('./build/'));
+  }
+
+  bundler.on('update', function() {
+    var updateStart = Date.now();
+    rebundle();
+    console.log('Updated!', (Date.now() - updateStart) + 'ms');
+  })
+
+  // run it once the first time buildScript is called
+  return rebundle();
+}
+
+// run once
+gulp.task('scripts', function() {
+  return buildScript('app.jsx', false);
 });
 
-
-// Just running the two tasks
-gulp.task('default', ['browserify']);
+// run 'scripts' task first, then watch for future changes
+gulp.task('default', ['scripts'], function() {
+  return buildScript('app.jsx', true);
+});
