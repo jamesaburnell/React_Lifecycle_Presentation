@@ -1,5 +1,5 @@
 {
-  "name": "unit-6SB-react-tic-tac-toe",
+  "name": "React_LifeCycle",
   "version": "1.0.0",
   "description": "reactTutorial =============",
   "main": "gulpfile.js",
@@ -19,6 +19,7 @@
     "browserify": "^10.2.4",
     "gulp": "^3.9.0",
     "gulp-notify": "^2.2.0",
+    "lodash": "^3.10.1",
     "react": "^0.14",
     "react-dom": "^0.14.0",
     "reactify": "^1.1.1",
